@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: timer-postgres
+    environment:
+      POSTGRES_USER: timer
+      POSTGRES_PASSWORD: timer123
+      POSTGRES_DB: timerdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    networks:
+      - timer-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U timer -d timerdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nats:
+    image: nats:2.10-alpine
+    container_name: timer-nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    networks:
+      - timer-network
+    command: "-js -m 8222"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  timer:
+    build: .
+    container_name: timer-platform
+    environment:
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_USER: timer
+      PG_PASSWORD: timer123
+      PG_DB_NAME: timerdb
+      API_KEY: dev-api-key-change-in-production-min-32-chars
+      NATS_HOST: nats
+      NATS_PORT: 4222
+      PORT: 8080
+      RUST_LOG: info
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    networks:
+      - timer-network
+    restart: unless-stopped
+
+networks:
+  timer-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

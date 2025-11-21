@@ -1,0 +1,77 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Rust build artifacts
+target/
+**/target/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Documentation
+README.md
+CLAUDE.md
+*.md
+docs/
+
+# Docker files (not needed inside image)
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile
+.dockerignore
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Task tracking
+.tasks/
+*.todo
+
+# Test files
+test_callbacks.sh
+tests/
+*_test.rs
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Migration files (if you run migrations separately)
+# migrations/
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# Backup files
+*.bak
+*.backup
+*.old
+.claude/
